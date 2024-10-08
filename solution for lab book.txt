@@ -1,0 +1,289 @@
+1. SELECT ename,sal,deptno from emp where deptno IN(20,30,40);
+
+2. SELECT ename as Name,job as Job,mgr as Reporting manager, hiredate as Hired Date, sal as Salary,comm as Comm,deptno as Department from emp;
+
+3.SELECT student_code, subject1+subject2+subject3 as sum from student_marks;
+
+4.select * from staff_masters s JOIN designation_masters d ON s.design_code=d.design_code WHERE design_name like 'Prof%' or design_name like 'Lect%';
+
+5.select s.dept_code,dept_name,count(staff_code) from staff_masters s JOIN department_masters d ON s.dept_code=d.dept_code
+where round((sysdate-hiredate)/365) >18 group by s.dept_code,dept_name;
+
+5.select deptno,dept_name,count(empno) from emp e JOIN department_masters d ON e.deptno=d.dept_code
+where round((sysdate-hiredate)/365) >18 group by deptno,dept_name;
+
+5.Original answer
+select empno,ename,deptno from emp where round((sysdate-hiredate)/365) >18;
+
+6.select staff_name,design_name from staff_masters s JOIN designation_masters d ON s.design_code=d.design_code WHERE hiredate<to_date('jan-2003','mon-yyyy');
+
+7.select staff_name, design_name,staff_sal*12*10 as "10yr Income" from staff_masters s JOIN designation_masters d
+ON s.design_code=d.design_code;
+
+8.select staff_name,round((sysdate-hiredate)/365) as Experience from  staff_masters;
+
+8. Original answer
+ select staff_name,round((sysdate-hiredate)/365) as Experience from  staff_masters s JOIN designation_masters d
+ON s.design_code=d.design_code WHERE design_name like 'Lect%';
+
+9.select student_name||','||' '||dept_code as "Student Info" from student_masters;
+
+10.select staff_name,staff_sal from staff_masters where staff_sal>=12000 and staff_sal<=25000 order by staff_sal,staff_name;
+
+11. select ename from emp where mgr is null;
+
+12.select student_name,dept_code,student_dob from student_masters WHERE student_dob>=to_date('01-jan-1981','dd-mon-yyyy') AND student_dob<=to_date('31-mar-1981','dd-mon-yyyy') order by student_dob;
+
+12.select student_name,dept_code,student_dob from student_masters WHERE student_dob between to_date('01-jan-1981','dd-mon-yyyy') AND to_date('31-mar-1981','dd-mon-yyyy') order by student_dob;
+
+13.select deptno,sum(sal) from emp where empno not in(select distinct e1.empno from emp e1 inner join emp e2 on e1.empno=e2.mgr) having sum(sal)>20000 group by deptno;
+
+13.select deptno,sum(sal) from emp where jon!='MANAGER' group by deptno having sum(sal)>20000;
+
+14. select * from book_masters bm JOIN book_transactions bt ON bm.book_code=bt.book_code where bt.book_actual_return_date is null;
+
+15.select student_name,nvl(to_char(dept_code),'No Department') as Department from student_masters;
+
+16.select staff_name,staff_sal,rpad('X',(staff_sal/1000),'X')  from staff_masters;
+
+Lab2: Single Row Query:
+
+1.select student_name,to_char(student_dob,'fmMonth, dd yyyy') from student_masters where to_char(student_dob,'Day') IN ('Saturday','Sunday');
+
+2.select staff_name,round((sysdate-hiredate)/30) as "Months Worked" from staff_masters;
+
+3.select * from emp where ename like'A%S';
+
+4.select ename,job from emp where ename like '%N%S' or ename like '%N%N';
+
+5.select staff_name,lpad(staff_sal,15,'$') from staff_masters;
+
+6.
+
+7.select * from emp where to_char(hiredate,'Mon')='Dec';
+
+8.select staff_name,staff_sal,case when staff_sal>=50000 then 'A'  when staff_sal between 25000 and 50000 then 'B' when staff_sal between 10000 and 25000 then 'C' when staff_sal<10000 then 'D' end grade from staff_masters;
+
+9.select staff_name,hiredate,to_char(hiredate,'Day')"Day" from staff_masters order by mod(to_char(hiredate, 'D') + 5, 7);
+
+9.select staff_name,hiredate,to_char(hiredate,'Day')"Day" from staff_masters ORDER BY (next_day(hiredate, 'MONDAY') - hiredate) DESC;
+
+9.//From Sunday
+select staff_name,hiredate,to_char(hiredate,'Day')"Day" from staff_masters order by to_char(hiredate,'d');
+
+9.select staff_name,hiredate,to_char(hiredate,'Day')"Day" from staff_masters ORDER BY (hiredate - next_day(hiredate, 'MONDAY'));
+
+10.select lpad('*',length(staff_name),'*') from staff_masters;
+
+11.select substr(staff_name,1,1)||lpad('*',length(staff_name)-2,'*')||substr(UPPER(staff_name),length(staff_name),1) from staff_masters;
+
+12.select staff_name from staff_masters where to_char(hiredate,'Mon') IN ('Jan','Feb','Mar','Apr','May','Jun');
+
+13. Refer qn.9 
+
+14. select INSTR('Mississippi','i',1,2) from dual;
+
+15.select to_char(next_day(last_day(sysdate)-interval '7' day,'friday'),'ddspth "of" fmMonth, yyyy')"PAY DATE" from dual;
+
+2.2 GROUP FUNCTIONS:
+
+16.select round(max(staff_sal)) "Maximum",round(min(staff_sal))"Minimum",round(sum(staff_sal))"Total",round(avg(staff_sal))"Average" from staff_masters;
+
+17.select dept_code,max(staff_sal) "Maximum",min(staff_sal)"Minimum",sum(staff_sal)"Total",round(avg(staff_sal))"Average" from staff_masters group by dept_code;
+
+18.select s.dept_code"Department Code",dept_name"Department Name",count(staff_code)"Number of People" from staff_masters s,department_masters d where s.dept_code=d.dept_code group by s.dept_code,dept_name;
+
+19.select count(*)"Total Number of Managers" from staff_masters where staff_code IN (select mgr_code from staff_masters);
+
+20. select staff_code,staff_name,staff_sal from staff_masters where staff_code IN (SELECT mgr_code from staff_masters) and staff_sal>10000 order by staff_sal desc;
+
+3.Joins and Subqueries
+
+1.select staff_name,s.dept_code,dept_name from staff_masters s JOIN department_masters d ON s.dept_code=d.dept_code where staff_sal>20000;
+
+2.select staff_name,s.dept_code,dept_name from staff_masters s JOIN department_masters d ON s.dept_code=d.dept_code where (lower(staff_name) like 'a%' or lower(staff_name) like '%a' or lower(staff_name) like '%a%')  and s.dept_code!=10;
+
+3.select e1.empno "Staff#",e1.ename "Staff",e1.mgr "Mgr#",e2.ename "Manager" from emp e1 JOIN emp e2 ON e1.mgr=e2.empno;
+
+4.select sm.student_code,student_name,dept_name,subject1,subject2,subject3 from student_masters sm JOIN department_masters dm ON sm.dept_code=dm.dept_code JOIN student_marks sms ON sm.student_code=sms.student_code where (subject1>=60 AND subject2>=60 AND subject3>=60) AND sm.dept_code IN (10,20);
+
+5.select bt.student_code,sm.student_name,bt.book_code,bm.book_name from book_transactions bt JOIN student_masters sm ON bt.student_code=sm.student_code JOIN book_masters bm ON bt.book_code=bm.book_code;
+
+6.select bt.staff_code,staff_name,dept_name,design_name,bt.book_code,book_name,book_issue_date from book_transactions bt JOIN staff_masters sm ON bt.staff_code=sm.staff_code JOIN department_masters dm ON sm.dept_code=dm.dept_code JOIN designation_masters ds ON sm.design_code=ds.design_code JOIN book_masters bm ON bm.book_code=bt.book_code;
+
+7.select staff_code,staff_name,design_name "Designation",dept_name"Department Name" from staff_masters sm JOIN department_masters dm ON sm.dept_code=dm.dept_code JOIN designation_masters ds ON sm.design_code=ds.design_code WHERE design_name!='HOD';
+
+8.select sm.student_code,student_name,dept_name,subject1+subject2+subject3 "TotalMarks",staff_name "HOD" from student_masters sm LEFT OUTER JOIN department_masters dm ON sm.dept_code=dm.dept_code JOIN student_marks ss ON sm.student_code=ss.student_code JOIN staff_masters st ON st.dept_code=dm.dept_code JOIN designation_masters ds ON ds.design_code=st.design_code WHERE student_year=2010 AND design_name='HOD'; 
+
+9.SELECT sm.staff_code,staff_name,dept_name,bt.book_code,book_name,book_pub_author,round(sysdate-book_expected_return_date)*5 "Fine" From book_transactions bt JOIN book_masters bm ON bt.book_code=bm.book_code JOIN staff_masters sm ON sm.staff_code=bt.staff_code JOIN department_masters dm ON dm.dept_code=sm.dept_code where book_actual_return_date is NULL;
+
+10.select staff_code,staff_name,staff_sal from staff_masters where staff_sal < (select avg(staff_sal) from staff_masters);
+
+11.select staff_code,staff_name from staff_masters where staff_code NOT IN(select mgr_code from staff_masters);
+
+12. select book_pub_author,book_name from book_masters where book_pub_author IN (select book_pub_author from book_masters group by book_pub_author having count(book_pub_author)>1);
+
+13.select sm.staff_code,staff_name,dept_name from staff_masters sm JOIN department_masters dm ON sm.dept_code=dm.dept_code WHERE staff_code IN(select staff_code from book_transactions group by staff_code having count(staff_code)>1) order by sm.staff_code;
+
+14.select sm.student_code,student_name,dept_name,subject1,subject2,subject3,subject1+subject2+subject3"Total" from student_masters sm JOIN department_masters dm ON sm.dept_code=dm.dept_code JOIN student_marks sms ON sms.student_code=sm.student_code  where student_year=2010 and rownum<=10 order by dept_name;
+
+15.select staff_name,dept_name,staff_sal from staff_masters sm JOIN department_masters dm ON sm.dept_code=dm.dept_code where staff_sal<(select avg(staff_sal) from staff_masters sm1 group by dept_code having sm.dept_code=sm1.dept_code );
+
+16.select sm.student_code,student_name from student_masters sm JOIN student_marks ss ON sm.student_code=ss.student_code JOIN department_masters dm ON sm.dept_code=dm.dept_code where student_year=2011 AND dept_name like 'Computer%' order by subject1 desc,subject2 desc,subject3 desc fetch first 1 row only;
+
+17.select * from staff_masters sm JOIN department_masters dm ON sm.dept_code=dm.dept_code PIVOT(MIN(STAFF_NAME) FOR dept_name IN('Electricals','Computer Science','Electronics','Mechanics'));
+
+17.select decode(dept_name,'Computer Science',staff_name) as Computer_science,
+decode(dept_name,'Electricals',staff_name) as Electricals,
+decode(dept_name,'Electronics',staff_name) as Electronics,
+decode(dept_name,'Mechanics',staff_name) as Mechanics
+from staff_masters sm JOIN department_masters dm ON sm.dept_code=dm.dept_code;
+
+18. select student_code,student_name,dept_name  from student_masters sm JOIN department_masters dm ON sm.dept_code=dm.dept_code  where sm.dept_code IN(select dept_code from student_masters group by dept_code order by count(*) desc fetch first 1 row only) order by student_code;
+
+19. select staff_code,staff_name,dept_name,design_name from staff_masters sm JOIN department_masters dm ON sm.dept_code=dm.dept_code JOIN designation_masters ds ON ds.design_code=sm.design_code order by staff_code;
+
+20. select e2.ename,count(*)-1 from emp e1 JOIN emp e2 ON e1.deptno=e2.deptno where e2.job='MANAGER' group by e1.deptno,e2.ename;
+
+
+3.2 Set Operators
+
+1.SELECT * FROM PREVIOUS_PRODUCTS UNION SELECT * FROM CURRENT_PRODUCTS;
+
+1.SELECT PID,NAME,UNIT,PRICE,STOCK FROM PREVIOUS_PRODUCTS UNION SELECT PID,NAME,UNIT,PRICE,STOCK FROM CURRENT_PRODUCTS ORDER BY PID;
+
+2.SELECT * FROM PREVIOUS_PRODUCTS UNION ALL SELECT * FROM CURRENT_PRODUCTS;
+
+2.SELECT PID,NAME,UNIT,PRICE,STOCK FROM PREVIOUS_PRODUCTS UNION ALL SELECT PID,NAME,UNIT,PRICE,STOCK FROM CURRENT_PRODUCTS ORDER BY PID;
+
+3.SELECT PID,NAME,UNIT,PRICE,STOCK FROM PREVIOUS_PRODUCTS INTERSECT SELECT PID,NAME,UNIT,PRICE,STOCK FROM CURRENT_PRODUCTS ORDER BY PID;
+
+4.SELECT PID,NAME,UNIT,PRICE,STOCK FROM PREVIOUS_PRODUCTS MINUS SELECT PID,NAME,UNIT,PRICE,STOCK FROM CURRENT_PRODUCTS ORDER BY PID;
+
+4.1 DATABASE OBJECT
+
+1.CREATE TABLE CUSTOMERS(
+Customerid NUMBER(5),
+CustomerName NUMBER(10),
+Address1 VARCHAR(30),
+Address2 VARCHAR(30));
+
+2.ALTER TABLE CUSTOMERS MODIFY CustomerName VARCHAR(30);
+
+3.ALTER table customers add (Gender VARCHAR2(1),
+Age NUMBER(3),
+PhoneNo NUMBER(10));
+
+4. INSERT INTO CUSTOMERS values(1000, 'Allen', '#115 Chicago',' #115 Chicago', 'M', 25, 7878776);
+
+ INSERT INTO CUSTOMERS values(1001, 'George', '#116 France',' #116 France', 'M', 25, 434524);
+
+INSERT INTO CUSTOMERS values(1002, 'Becker',' #114 New York','#114 New York','M', 45, 431525);
+
+5. alter table customers add constraint  custid_prim primary key(customerid);
+
+6.INSERT INTO CUSTOMERS values(1002, 'John', '#114 Chicago', '#114 Chicago', 'M', 45, 439525);
+INSERT INTO CUSTOMERS values(1002, 'John', '#114 Chicago', '#114 Chicago', 'M', 45, 439525)
+*
+ERROR at line 1:
+ORA-00001: unique constraint (ABC.CUSTID_PRIM) violated
+
+7.alter table customers disable constraint custid_prim;
+INSERT INTO CUSTOMERS values(1002, 'Becker',' #114 New York', '#114 New york' , 'M', 45, 431525);
+INSERT INTO CUSTOMERS values(1003,'Nanapatekar','#115 India','#115 India','M', 45, 431525 );
+
+8.alter table customers enable constraint custid_prim;
+alter table customers enable constraint custid_prim
+*
+ERROR at line 1:
+ORA-02437: cannot validate (ABC.CUSTID_PRIM) - primary key violated
+
+9.INSERT INTO customers VALUE(1002, 'Becker', '#114 New York', '#114 New york' , 'M', 45, 431525, 15000.50);
+INSERT INTO customers VALUE(1003, 'Nanapatekar', '#115 India', '#115 India' , 'M', 45, 431525, 20000.50);
+
+10.TRUNCATE TABLE CUSTOMERS;
+
+11.ALTER TABLE customers ADD e_mail Varchar(30);
+
+12. ALTER TABLE customers drop column e_mail;
+
+13.ALTER TABLE customers ADD Emailid Varchar(30);
+
+14.ALTER TABLE customers drop UNUSED COLUMN;
+
+15.ALTER TABLE customers drop UNUSED COLUMN;
+
+16. comment on table customers is 'Customer Details';
+
+17.select * from user_tab_comments where comments like 'Customer Details';
+
+18.comment on column customers.PhoneNo is 'Personal Contact No';
+
+19. select * from user_col_comments where column_name='PHONENO';
+
+20.CREATE TABLE suppliers(
+suppid NUMBER(5),
+sName NUMBER(10),
+Addr1 VARCHAR(30),
+Addr2 VARCHAR(30),
+contactno NUMBER(10));
+
+21.DROP TABLE suppliers;
+CREATE TABLE customerMaster(
+Customerid NUMBER(5)CONSTRAINT Custid_pk PRIMARY KEY,
+CustomerName VARCHAR2(30) NOT NULL,
+Address1 VARCHAR2(30) NOT NULL,
+Address2 VARCHAR2(30),
+Gender VARCHAR2(1),
+Age NUMBER(3),
+PhoneNo NUMBER(10));
+
+22.CREATE SEQUENCE acc_no 
+START WITH 10001
+INCREMENT BY 1;
+
+CREATE TABLE AccountsMaster(
+Customerid Number(5),
+AccountNumber NUMBER(10,2)DEFAULT acc_no.nextval CONSTRAINT Acc_pk PRIMARY KEY ,
+Accounttype CHAR(3),
+LedgerBalance NUMBER(10,2) NOT NULL);
+
+23.ALTER TABLE AccountsMaster ADD CONSTRAINT Cust_acc FOREIGN KEY(Customerid) REFERENCES CustomerMaster(Customerid);
+
+24.INSERT INTO customermaster VALUES(1000, 'Allen', '#115 Chicago', '#115 Chicago', 'M', 25, 7878776);
+INSERT INTO customermaster VALUES(1001, 'George', '#116 France', '#116 France', 'M', 25, 434524);
+INSERT INTO customermaster VALUES(1002, 'Becker', '#114 New York', '#114 New York', 'M', 45, 431525);
+
+25. ALTER TABLE AccountsMaster ADD CONSTRAINT acctype_check CHECK(Accounttype='NRI' OR Accounttype='IND');
+
+26.INSERT INTO Accountsmaster (Customerid,Accounttype,LedgerBalance)VALUES(1000,'NRI',6000);
+INSERT INTO Accountsmaster (Customerid,Accounttype,LedgerBalance)VALUES(1001,'IND',10000);
+INSERT INTO Accountsmaster (Customerid,Accounttype,LedgerBalance)VALUES(1002,'IND',60000);
+INSERT INTO Accountsmaster (Customerid,Accounttype,LedgerBalance)VALUES(1000,'NRI',12000);
+INSERT INTO Accountsmaster (Customerid,Accounttype,LedgerBalance)VALUES(1001,'IND',50000);
+
+27.ALTER TABLE Accountsmaster ADD CONSTRAINT Balance_check CHECK(LedgerBalance>5000);
+
+28.
+
+29.CREATE TABLE AccountDetails AS SELECT * FROM Accountsmaster;
+
+30. RENAME AccountDetails TO BackUpTable;
+
+31.CREATE VIEW acc_view AS (SELECT cm.customerid "Customercode",cm.customername "AccountHolderName",am.accountnumber "AccountNumber",am.accounttype"Type",am.ledgerbalance"Balance" FROM customermaster cm JOIN accountsmaster am on cm.customerid=am.customerid);
+
+32.CREATE VIEW vAccs_Dtls AS (SELECT cm.customerid,customername FROM customermaster cm JOIN accountsmaster am on cm.customerid=am.customerid WHERE (accounttype='IND' AND ledgerbalance>10000)) WITH CHECK OPTION;
+
+33.CREATE VIEW accsvw10 AS (SELECT cm.customerid,customername FROM customermaster cm JOIN accountsmaster am on cm.customerid=am.customerid WHERE (accounttype='IND' AND ledgerbalance>10000)) WITH CHECK OPTION;
+
+34.select sm.dept_code,dm.dept_name,max(staff_sal) from staff_masters sm JOIN department_masters dm ON sm.dept_code=dm.dept_code group by sm.dept_code,dm.dept_name;
+
+//sum(sal) for each dept
+select sm.dept_code,dm.dept_name,sum(staff_sal) from staff_masters sm JOIN department_masters dm ON sm.dept_code=dm.dept_code group by sm.dept_code,dm.dept_name;
+
+35.
+
+
+
+
+
